@@ -1,9 +1,7 @@
-import pyautogui
+import pyautogui as p
 import time
 #this script clicks links on a fullscreen youtube webpage (July, 2019) 
 #automates deleting playlists
-
-p = pyautogui
 
 p.click(x=120, y=605) #Click showmore
 time.sleep(1.5) #wait for youtube's menu to drop
