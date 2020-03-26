@@ -1,0 +1,81 @@
+from tkinter import *
+from tkinter import ttk, StringVar
+import sqlite3 as sq
+
+# initiate gui
+root = Tk()
+
+# window title
+root.title('CRUD APP')
+
+# size of Window
+root.geometry('200x250')
+
+# Header
+header = Label(root, text='CRUD APP')
+header.pack()
+
+# Create Database connection
+conn = sq.connect('CRUD.db')
+c = conn.cursor()
+
+# Data Entry Label
+entryLabel = Label(root, text = 'Enter Data Here')
+entryLabel.pack()
+
+# Data Entry
+eVar = StringVar(root)
+entry = Entry(root, textvariable=eVar)
+entry.pack()
+
+# Table Select Label
+tableSelectLabel = Label(root, text = 'Select Table')
+tableSelectLabel.pack()
+
+# Table Select // Populated List of Tables in opened Database
+c.execute('SELECT name FROM sqlite_master WHERE type= "table"')  # points the cursor
+tables = c.fetchall()  # records what the cursor is pointing at
+
+# Select Table // takes c.fetchall
+tableSelect = StringVar(root)
+tableSelect.set('-')
+tableMenu = OptionMenu(root, tableSelect, *tables)
+tableMenu.pack()
+
+# Record Function // databaseSelect holds the OptionMenu Selection
+
+
+def recordb():
+    x = tableSelect.get()   # Comes in a String with (---,)
+    table = x[2:-3]         # Trimming the ( ,)
+    data = [eVar.get(),]    # Grabbing Variables / need comma for Tuple
+    c.execute("INSERT INTO " + table + " (column1) VALUES (?)", data)
+    conn.commit()
+    c.execute('SELECT * FROM ' + table)
+    rows = c.fetchall()
+    for i in rows:
+        viewBox.insert(0, i)
+
+
+def viewtbl():
+    x = tableSelect.get()  # Comes in a String with (---,)
+    table = x[2:-3]  # Trimming the ( ,)
+    c.execute('SELECT * FROM ' + table)
+    rows = c.fetchall()
+    for i in rows:
+        viewBox.insert(0, i)
+
+
+# Record Button
+recordButton = ttk.Button(root, text='Record Input', command=recordb)
+recordButton.pack()
+
+viewTable = ttk.Button(root, text='View Table', command=viewtbl)
+viewTable.pack()
+
+# Data View
+viewBox = Listbox(root, height='4', width='100', font=('arial', 12))
+viewBox.pack()
+
+
+root.mainloop()
